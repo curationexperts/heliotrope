@@ -4,7 +4,8 @@
   "dependencies": {
     "@rails/webpacker": "5.2.1",
     "jquery": "^3.5.1",
-    "js-cookie": "^2.2.1"
+    "js-cookie": "^2.2.1",
+    "cozy-sun-bear": "git+https://github.com/mlibrary/cozy-sun-bear.git#use-webpack"
   },
   "devDependencies": {
     "webpack-dev-server": "^3.11.0"

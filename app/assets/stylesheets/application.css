@@ -15,7 +15,6 @@
  *= require_tree ./common
  *= require dataTables/bootstrap/3/jquery.dataTables.bootstrap
  *= require jquery-ui/datepicker
- *= require cozy-sun-bear-main
  *= require idpselect
  * rails new <app> defaults...
  * require_tree .

@@ -1,12 +1,4 @@
 GIT
-  remote: https://github.com/mlibrary/cozy-sun-bear
-  revision: 7f8803b5e218d009a1360f3f18755e233f205499
-  ref: 7f8803b5e218d009a1360f3f18755e233f205499
-  specs:
-    cozy-sun-bear (0.1.0)
-      railties (>= 3.1.1)
-
-GIT
   remote: https://github.com/mlibrary/handle_rest
   revision: 944fa06a119072f060d986862c34dea7215ebd29
   ref: 944fa06a119072f060d986862c34dea7215ebd29
@@ -1096,7 +1088,6 @@ DEPENDENCIES
   combine_pdf (~> 1.0)
   config
   coveralls
-  cozy-sun-bear!
   devise (>= 4.7.1)
   devise-guests (~> 0.7)
   factory_bot_rails

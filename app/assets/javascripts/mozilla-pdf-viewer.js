@@ -6,6 +6,5 @@
 //= require js.cookie
 // needed by social media share links widget (data-toggle="dropdown")
 //= require bootstrap/dropdown
-//= require cozy-sun-bear-main
 // needed by Google Analytics
 //= require application/ga_event_tracking

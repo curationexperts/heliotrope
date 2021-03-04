@@ -101,9 +101,6 @@ gem 'combine_pdf', '~> 1.0'
 # use config gem to pull in settings from .yml files
 gem 'config'
 
-# Use gem version of cozy-sun-bear
-gem 'cozy-sun-bear', git: 'https://github.com/mlibrary/cozy-sun-bear', ref: '7f8803b5e218d009a1360f3f18755e233f205499'
-
 gem 'devise', '>= 4.7.1'
 gem 'devise-guests', '~> 0.7'
 

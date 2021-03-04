@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title><%= content_for?(:page_title) ? yield(:page_title) : default_page_title %></title>
+    <meta name="viewport" content="width=device-width">
+    <%= csrf_meta_tag %>
+
+    <!-- Favicons and theme colors -->
+    <%= render 'shared/favicon' %>
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- Citation metadata for Google Scholar -->
+    <%= render 'shared/metadata' %>
+
+  <% if press_presenter.present? %>
+    <!-- Typekit -->
+    <%= render 'shared/typekit' %>
+  <% end %>
+
+    <!-- CSS -->
+    <%= stylesheet_link_tag 'application' %>
+    <%= stylesheet_pack_tag 'application' %>
+    <%= stylesheet_pack_tag 'cozy-sun-bear/cozy-sun-bear' %>
+
+    <!-- Javascript -->
+    <%= javascript_include_tag 'application' %>
+    <%= javascript_include_tag 'https://umich.edu/apis/umcookieconsent/umcookieconsent.js' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'cozy-sun-bear/cozy-sun-bear' %>
+
+    <%# See comments in HELIO-3046. While working on HELIO-3162 this seemed to help system spec behavior locally %>
+    <% if Rails.env.test? %>
+      <%# https://github.com/teamcapybara/capybara/issues/1706#issuecomment-224371471 %>
+      <%= javascript_tag do %>
+        $.support.transition = false; // disable Bootstrap animations
+        $.fx.off = true; // disable jQuery animations
+      <% end %>
+      <%# https://marcgg.com/blog/2015/01/05/css-animations-failing-capybara-specs/ %>
+      <style type="text/css">
+        * {
+          transition-property: none !important;
+          -o-transition-property: none !important;
+          -moz-transition-property: none !important;
+          -ms-transition-property: none !important;
+          -webkit-transition-property: none !important;
+
+          transform: none !important;
+          -o-transform: none !important;
+          -moz-transform: none !important;
+          -ms-transform: none !important;
+          -webkit-transform: none !important;
+
+          animation: none !important;
+          -o-animation: none !important;
+          -moz-animation: none !important;
+          -ms-animation: none !important;
+          -webkit-animation: none !important;
+        }
+      </style>
+    <% end %>
+
+  <% if content_for?(:head) %>
+    <%= yield(:head) %>
+  <% end %>
+
+  <!-- This seemingly causes Turbolinks issues when compiled with the rest of the JS, set it here for reuse -->
+  <script>
+    var heliotropeIncompatibleWebGlUser = false;
+    if (bowser.mobile || bowser.tablet || bowser.msie) heliotropeIncompatibleWebGlUser = true;
+    // Suppress incompatible browser warning in Google search snippet.
+    if (bowser.googlebot) heliotropeIncompatibleWebGlUser = false;
+
+    window.umcookieconsent = {
+      // Uncomment to simulate access outside US
+      // law: { countryCode: 'UK' },
+      content: { href: 'https://fulcrum.org/privacy' }
+     };
+  </script>
+
+  </head>
+
+  <%= tag.body class: press_presenter.present? ? press_presenter.press_subdomains : '' do %>
+
+    <%= content_for?(:body) ? yield(:body) : yield %>
+
+    <%= render 'shared/ajax_modal' %>
+    <%= render 'shared/cookie_alert' %>
+    <%= render 'shared/monitoring' if Rails.env.production? %>
+  <% end %>
+</html>
