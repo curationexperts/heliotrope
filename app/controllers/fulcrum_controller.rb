@@ -33,8 +33,6 @@ class FulcrumController < ApplicationController
       MigrateMetadataJob.perform_later(params[:job], params[:noid])
     when 'recache_in_common_metadata'
       RecacheInCommonMetadataJob.perform_now
-    when 'credential'
-      CredentialJob.perform_now
     when 'reindex'
       ReindexJob.perform_later(params[:noid])
     when 'reindex_everything'

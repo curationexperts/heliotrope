@@ -42,6 +42,8 @@ module Greensub
     end
 
     def label
+      return @label if @label.present?
+      @label = 'Null' if self.instance_of?(Greensub::License)
       @label ||= /^Greensub::(.+)(License$)/.match(self.class.to_s)[1]
     end
 

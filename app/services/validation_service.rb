@@ -28,6 +28,16 @@ class ValidationService
     false
   end
 
+  def self.valid_action?(action)
+    case action
+    when :create; true
+    when :read; true
+    when :update; true
+    when :delete; true
+    else false
+    end
+  end
+
   # Object Validation
 
   def self.valid_entity?(id)
@@ -90,13 +100,11 @@ class ValidationService
     end
   end
 
-  # Permission Credential Validation
+  # Credential Validation
 
   def self.valid_permission?(permission)
     %i[read].include?(permission&.to_s&.to_sym)
   end
-
-  # Credential Validation
 
   def self.valid_credential_type?(type)
     %i[License permission].include?(type&.to_s&.to_sym)

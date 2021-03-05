@@ -10,7 +10,7 @@ class EPubPolicy < ResourcePolicy
   def show? # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
     debug_log("show? #{actor.agent_type}:#{actor.agent_id}, #{target.resource_type}:#{target.resource_id}, share is #{share}")
 
-    value = super
+    value = actor_platform_admin?
     debug_log("platform_admin? #{value}")
     return true if value
 

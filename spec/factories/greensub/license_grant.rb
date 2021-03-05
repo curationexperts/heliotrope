@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
+class LicenseGrant < Checkpoint::DB::Grant
+  def save!
+    save
+  end
+end
+
 FactoryBot.define do
-  factory :license_grant, aliases: [:individual_license_grant], class: Greensub::LicenseGrant do
+  factory :license_grant, aliases: [:individual_license_grant], class: LicenseGrant do
     agent_type { "Individual" }
     sequence(:agent_id, &:to_s)
     agent_token { "#{agent_type}:#{agent_id}" }

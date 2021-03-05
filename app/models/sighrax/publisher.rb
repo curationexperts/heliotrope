@@ -5,6 +5,7 @@ module Sighrax
     private_class_method :new
 
     attr_reader :subdomain
+    attr_reader :press
 
     # Class Methods
 
@@ -84,8 +85,6 @@ module Sighrax
     end
 
     protected
-
-      attr_reader :press
 
       def type
         @type ||= /^Sighrax::(.+$)/.match(self.class.to_s)[1].to_sym

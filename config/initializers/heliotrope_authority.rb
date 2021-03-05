@@ -7,11 +7,9 @@
 # the services container, so its name is not relevant except in the services
 # initializer.
 
-
 class HeliotropeAuthority < Checkpoint::Authority
   def licenses_for(actor, target)
-    # Greensub::License.where(
-    License.where(
+    Greensub::License.where(
       id: what(actor, target)
         .select { |token| token.type.downcase == 'license' }
         .map(&:id)

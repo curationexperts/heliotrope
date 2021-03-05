@@ -120,35 +120,58 @@ RSpec.describe Greensub::Product, type: :model do
       institution = create(:institution)
       institution_license = create(:full_license)
 
+      expect(subject.licensees?).to be false
       expect(subject.licensees).to be_empty
+      expect(subject.individuals?).to be false
+      expect(subject.individuals).to be_empty
+      expect(subject.institutions?).to be false
+      expect(subject.institutions).to be_empty
+      expect(subject.licenses?).to be false
+      expect(subject.licenses).to be_empty
 
       expect(subject.update?).to be true
       expect(subject.destroy?).to be true
       expect(subject.grants?).to be false
 
       Authority.grant!(individual, individual_license, subject)
+      expect(subject.licensees?).to be true
       expect(subject.licensees).to contain_exactly(individual)
+      expect(subject.individuals?).to be true
+      expect(subject.individuals).to contain_exactly(individual)
 
       expect(subject.update?).to be true
       expect(subject.destroy?).to be false
       expect(subject.grants?).to be true
 
       Authority.grant!(institution, institution_license, subject)
+      expect(subject.licensees?).to be true
       expect(subject.licensees).to contain_exactly(individual, institution)
+      expect(subject.institutions?).to be true
+      expect(subject.institutions).to contain_exactly(institution)
 
       expect(subject.update?).to be true
       expect(subject.destroy?).to be false
       expect(subject.grants?).to be true
 
       Authority.revoke!(individual, individual_license, subject)
+      expect(subject.licensees?).to be true
       expect(subject.licensees).to contain_exactly(institution)
+      expect(subject.individuals?).to be false
+      expect(subject.individuals).to be_empty
 
       expect(subject.update?).to be true
       expect(subject.destroy?).to be false
       expect(subject.grants?).to be true
 
       Authority.revoke!(institution, institution_license, subject)
+      expect(subject.licensees?).to be false
       expect(subject.licensees).to be_empty
+      expect(subject.individuals?).to be false
+      expect(subject.individuals).to be_empty
+      expect(subject.institutions?).to be false
+      expect(subject.institutions).to be_empty
+      expect(subject.licenses?).to be false
+      expect(subject.licenses).to be_empty
 
       expect(subject.update?).to be true
       expect(subject.destroy?).to be true

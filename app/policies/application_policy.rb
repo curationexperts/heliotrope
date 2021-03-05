@@ -12,6 +12,10 @@ class ApplicationPolicy
 
   protected
 
+    def actor_platform_admin?
+      @actor_platform_admin ||= Sighrax.platform_admin?(actor)
+    end
+
     def action_permitted?(action)
       Checkpoint::Query::ActionPermitted.new(actor, action, target, authority: authority).true? && Incognito.allow_action_permitted?(actor)
     rescue StandardError => e

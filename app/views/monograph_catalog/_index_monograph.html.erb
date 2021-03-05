@@ -84,10 +84,14 @@
                 </a>
               <% else %>
                 <a id="monograph-read-btn"
-                   href="<%= epub_path(@presenter.reader_ebook) %>"
-                   class="btn btn-default"
-                   data-turbolinks="false">
-                   <%= t('monograph_catalog.index.read_book') %>
+                  <% if @presenter.epub? %>
+                    href="<%= epub_path(@presenter.reader_ebook) %>"
+                  <% else %>
+                    href="<%= pdf_ebook_path(@presenter.reader_ebook) %>"
+                  <% end %>
+                  class="btn btn-default"
+                  data-turbolinks="false">
+                  <%= t('monograph_catalog.index.read_book') %>
                 </a>
               <% end %>
             <% end %>

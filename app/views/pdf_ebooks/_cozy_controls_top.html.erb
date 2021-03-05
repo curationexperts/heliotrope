@@ -1,0 +1,47 @@
+        // Close reader/Return to previous screen widget
+        cozy.control.widget.button({
+          region: 'top.header.left',
+          data: { label: '<i class="icon-x oi" data-glyph="x" aria-hidden="true"></i>'},
+          template: '<button class="button--sm cozy-close" data-toggle="button" data-slot="label" aria-label="Close reader"></button>',
+          onClick: function() { window.location = "<%= "#{@back_link}" %>"; }
+        }).addTo(reader);
+
+        // Press brand widget
+        // TODO: only show logo for publishers that also have CSS overrides.
+        <% if defined? @subdomain %>
+        // only include logos for heb, nyupress, leverpress, rekihaku, sussex and gabii at this point
+          <% if %w[heb nyupress gabii michigan leverpress rekihaku sussex].include? @subdomain %>
+            cozy.control.widget.panel({
+              region: 'top.header.left',
+              template: '<div class="logo"><%= link_to (image_tag press_presenter.logo, role: 'link', alt: @subdomain + ' catalog on Fulcrum'), URI.join(main_app.root_url, @subdomain).to_s %></div>',
+              data: { title: "<%= @subdomain %>" }
+            }).addTo(reader);
+          <% end %>
+        <% end %>
+
+        // Book/chapter title widget
+        cozy.control.title({ region: 'top.header.left' }).addTo(reader);
+
+        // Altmetric and Dimensions widgets
+        cozy.control.widget.panel({
+          region: 'top.header.right',
+          className: 'cozy-container-altmetric',
+          template: '<div data-badge-type="1" data-isbn="<%= @parent_presenter.isbn_noformat.first %>" data-hide-no-mentions="true" class="altmetric-embed"></div>',
+        }).addTo(reader);
+
+        <% if @parent_presenter.doi.present? %>
+          cozy.control.widget.panel({
+            region: 'top.header.right',
+            className: 'cozy-container-dimensions',
+            template: '<span class="__dimensions_badge_embed__" data-doi="<%= @parent_presenter.doi_path %>" data-hide-zero-citations="true" data-legend="never" data-style="large_rectangle"></span>',
+          }).addTo(reader);
+        <% end %>
+
+        // MOBILE ONLY
+        // Close reader/Return to previous screen widget
+        cozy.control.widget.button({
+          region: 'top.toolbar.left',
+          data: { label: '<i class="icon-x oi" data-glyph="x" aria-hidden="true"></i>'},
+          template: '<button class="button--sm cozy-close mobile" data-toggle="button" data-slot="label" aria-label="Close reader"></button>',
+          onClick: function() { window.location = "<%= "#{@back_link}" %>"; }
+        }).addTo(reader);

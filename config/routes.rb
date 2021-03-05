@@ -152,6 +152,13 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :pdf_ebooks, only: :show do
+    member do
+      get :file
+      get :download
+    end
+  end
+
   get 'epubs/:id', controller: :e_pubs, action: :show, as: :epub
   get 'epubs/:id/*file', controller: :e_pubs, action: :file, as: :epub_file
   get 'epubs_access/:id', controller: :e_pubs, action: :access, as: :epub_access

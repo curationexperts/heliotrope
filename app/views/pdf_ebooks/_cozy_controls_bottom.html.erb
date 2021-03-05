@@ -1,0 +1,164 @@
+        // Table of contents widget
+        <% if @parent_presenter.epub? %>
+        cozy.control.contents({ region: 'top.toolbar.left', skipLink: '.skip' }).addTo(reader);
+        <% else %>
+        var contents = new PDFContents({ region: 'top.toolbar.left', skipLink: '.skip' });
+        contents.addTo(reader);
+        <% end %>
+
+        // Resources
+        <% if @parent_presenter.assets? %>
+        cozy.control.widget.button({
+          region: 'top.toolbar.left',
+          template: '<button class="button--sm media" data-toggle="button" aria-label="Resources">Resources</button>',
+          onClick: function() { window.location = "<%= "#{@parent_presenter.catalog_url + '#resources'}" %>"; }
+        }).addTo(reader);
+        <% end %>
+
+        <% if @parent_presenter.citations_ready? %>
+        // Citation widget
+        // see: https://github.com/mlibrary/cozy-sun-bear/wiki/Metadata-and-Citations
+        var my_citations = [
+          {format: 'MLA', text: "<%= export_as_mla_citation(@parent_presenter).gsub('"', '\"').html_safe %>" },
+          {format: 'APA', text: "<%= export_as_apa_citation(@parent_presenter).gsub('"', '\"').html_safe %>" },
+          {format: 'Chicago', text: "<%= export_as_chicago_citation(@parent_presenter).gsub('"', '\"').html_safe %>" }
+        ]
+        cozy.control.citation({ region: 'top.toolbar.left', citations: my_citations }).addTo(reader);
+        <% end %>
+
+        // Search widget
+        <% unless Heliotrope::Application.config.cozy_epub_engine == 'readium' %>
+          <% if @parent_presenter.epub? %>
+          cozy.control.search({
+            region: 'top.toolbar.left',
+            searchUrl: "<%= @search_url %>"
+          }).addTo(reader);
+          <% else %>
+          var search = new PDFSearch({ region: 'top.toolbar.left' });
+          search.addTo(reader);
+          <% end %>
+        <% end %>
+
+        // Share widget
+        cozy.control.widget.button({
+          region: 'top.toolbar.left',
+          template: '<%= @parent_presenter.social_share_widget_template %>'
+        }).addTo(reader);
+
+        // Download widget
+        <% if @ebook_download_presenter.csb_download_links.length.positive? && @share_link.nil? %>
+        cozy.control.download({
+            region: 'top.toolbar.left',
+            template: '<button class="button--sm cozy-download" data-toggle="open" aria-label="Download book" role="button"><i id="download-control-button" class="oi" data-glyph="data-transfer-download" title="Download book" aria-hidden="true"></i></button>',
+        }).addTo(reader);
+        <% end %>
+
+        // Restricted Share Link widget
+        <% if @component.present? && @press.allow_share_links? && !@parent_presenter.open_access? && @share_link.nil? %>
+        modal = reader.modal({
+                region: 'left',
+                title: 'Share Temporary Access to this Book',
+                template: '<p>The following URL can be shared with non-subscribing users to provide them with temporary access to this restricted work for 28 days:</p> <blockquote id="share-link" style="padding: 8px; border-left: 4px solid black; background-color: #fff; word-wrap:break-word;"></blockquote><p>The URL can be copied to your clipboard using the button below or manually copied by highlighting the text.</p><p>After 28 days the link will expire and no longer work.</p><div class="alert alert-info" id="message" style="display: none"></div>',
+                fraction: 0.5,
+                actions: [
+                  {
+                    label: 'Copy Link',
+                    callback: function(event) {
+                      document.designMode = "on";
+                      var link = self.modal._container.querySelector("#share-link");
+                      var message = self.modal._container.querySelector("#message");
+
+                      var range = document.createRange();
+                      range.selectNode(link);
+                      var sel = window.getSelection();
+                      sel.removeAllRanges();
+                      sel.addRange(range);
+
+                      // formatted.select();
+
+                      try {
+                        var flag = document.execCommand('copy');
+                      } catch(err) {
+                        console.log("AHOY COPY FAILED", err);
+                      }
+
+                      self.message.innerHTML = 'Success! Share link copied to your clipboard.';
+                      self.message.style.display = 'block';
+                      sel.removeAllRanges();
+                      range.detach();
+                      document.designMode = "off";
+                    }
+                  }
+                ]
+            })
+
+        // Share widget
+        cozy.control.widget.button({
+          region: 'top.toolbar.left',
+          template: '<button id="share-link-btn" class="button--sm cozy-share" data-toggle="button" data-slot="label" aria-label="Share a Readable Version"><i class="oi" data-glyph="link-intact" title="Share a Readable Version" aria-hidden="true"></i></button>',
+          onClick: function() {
+            $.get("<%= "#{epub_share_link_path(id: @presenter.id)}" %>", function(data) {
+              console.log("SHARE_LINK:", data);
+              if (data) {
+                var bq = modal._container.querySelector("#share-link");
+                bq.innerText = data;
+                modal.activate();
+              }
+            });
+          }
+        }).addTo(reader);
+        <% end %>
+
+        // Fullscreen
+        cozy.control.fullscreen({ region: 'top.toolbar.right' }).addTo(reader);
+
+        // Preferences and Settings
+        cozy.control.preferences({
+          <% if @parent_presenter.webgl? %>
+            fields: [
+              {
+                label: 'Accessibility Mode',
+                name: 'accessibility-mode',
+                inputs: [
+                  { value: 'off', label: 'Off' },
+                  { value: 'on', label: 'On'}
+                ],
+                value: heliotropeIncompatibleWebGlUser === true ? 'on' : 'off',
+                callback: function(value) {
+                  if (value == 'on') {
+                    a11y_on();
+                  } else {
+                    a11y_off();
+                  }
+                },
+                hint: 'When Accessibility Mode is "On", the publication is read without the 3D model. All links to stratigraphic units point to external database records.'
+              }
+            ],
+          <% end %>
+          region: 'top.toolbar.right'
+        }).addTo(reader);
+
+        // Paging widgets
+        <% if @parent_presenter.pdf_ebook? %>
+        var action = cozy.control.pagePrevious({ region: 'left.sidebar' }).addTo(reader);
+        action._control.setAttribute('id', 'previous');
+        action = cozy.control.pageNext({ region: 'right.sidebar' }).addTo(reader);
+        action._control.setAttribute('id', 'next');
+        <% else %>
+        cozy.control.pagePrevious({ region: 'left.sidebar' }).addTo(reader);
+        cozy.control.pageNext({ region: 'right.sidebar' }).addTo(reader);
+        <% end %>
+
+        // Feedback widget
+        cozy.control.widget.panel({
+          region: 'bottom.navigator.left',
+          className: 'cozy-panel-feedback',
+          <% if @parent_presenter.webgl? %>
+          template: '<a href="https://docs.google.com/forms/d/e/1FAIpQLSehtWeYRAmb12pLcQV0WXDvsQgdEsI6H-gbj4HumdySrmwhZg/viewform?usp=sf_link" target="_blank" title="Report a problem or share feedback"><i class="icon-comment-square oi" data-glyph="comment-square" aria-hidden="true"></i></a>',
+          <% else %>
+          template: '<a href="https://umich.qualtrics.com/jfe/form/SV_3KSLynPij0fqrD7?publisher=<%= @subdomain %>&noid=<%= @presenter.id %>&title=<%= @parent_presenter.page_title %>&url=<%= request.original_url %>" target="_blank" title="Report a problem or share feedback"><i class="icon-comment-square oi" data-glyph="comment-square" aria-hidden="true"></i></a>',
+          <% end %>
+        }).addTo(reader);
+
+        // Navigator widgets
+        cozy.control.navigator({ region: 'bottom.navigator' }).addTo(reader);

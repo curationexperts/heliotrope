@@ -41,7 +41,14 @@ RSpec.describe Greensub::License, type: :model do
   describe 'License' do
     subject { license }
 
-    let(:license) { create(:full_license) }
+    let(:license) { create(:license) }
+
+    it { expect { subject }.not_to raise_exception }
+    it { expect(subject).to be_an_instance_of(Greensub::License) }
+    it { expect(subject.label).to eq 'Null' }
+    it { expect(subject.entitlements).to be_empty }
+    it { expect(subject.allows?(:download)).to be false }
+    it { expect(subject.allows?(:reader)).to be false }
 
     it { expect(subject.allows?(:action)).to be false }
     it { expect(subject.update?).to be true }
@@ -61,8 +68,8 @@ RSpec.describe Greensub::License, type: :model do
 
     it 'updates' do
       id = license.id
-      expect(license).to be_an_instance_of(Greensub::FullLicense)
-      expect(license.type).to eq "Greensub::FullLicense"
+      expect(license).to be_an_instance_of(Greensub::License)
+      expect(license.type).to eq "Greensub::License"
       license.type = "Greensub::TrialLicense"
       license.save
       license = Greensub::License.find(id)
